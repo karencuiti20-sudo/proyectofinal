@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompuTab - Sistema de Préstamos</title>
+    <!-- Iconos del sistema -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ================= PANTALLA 1: INICIO DE SESIÓN ================= -->
+    <section id="view-login" class="login-page active">
+        <form class="login-card" onsubmit="event.preventDefault(); handleLogin();">
+            <header class="login-header">
+                <span class="login-icon"><i class="fas fa-desktop"></i></span>
+                <h1>Sistema de Préstamos de PC</h1>
+                <p>Institución Educativa</p>
+            </header>
+            
+            <fieldset class="login-fields">
+                <p class="form-group">
+                    <label><i class="fas fa-user"></i> Usuario</label>
+                    <input type="text" id="login-user" placeholder="admin o encargado" required>
+                </p>
+                <p class="form-group">
+                    <label><i class="fas fa-lock"></i> Contraseña</label>
+                    <input type="password" id="login-pass" placeholder="••••••••" required>
+                </p>
+                <!-- Mensaje de error oculto por defecto -->
+                <p id="login-error" class="login-error">
+                    <i class="fas fa-exclamation-circle"></i> Usuario o contraseña incorrectos
+                </p>
+            </fieldset>
+
+            <button type="submit" class="btn btn-blue w-100 shadow-btn">Iniciar sesión</button>
+            
+            <footer class="login-footer">
+                <small>© 2026 Institución Educativa. Todos los derechos reservados.</small>
+            </footer>
+        </form>
+    </section>
+
+    <!-- ================= CONTENEDOR DEL SISTEMA SEGURO ================= -->
+    <main class="app-container" id="app-system" style="display: none;">
+        
+        <!-- SIDEBAR DE NAVEGACIÓN -->
+        <aside class="sidebar" id="sidebar">
+            <header class="sidebar-header">
+                <i class="fas fa-desktop"></i>
+                <span class="logo-text">Préstamos de PC</span>
+                <button type="button" id="btn-hamburger" class="btn-hamburger">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </header>
+            
+            <nav class="sidebar-menu">
+                <ul>
+                    <li class="menu-item active" data-target="view-dashboard" onclick="switchView('view-dashboard')">
+                        <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                    </li>
+                    <li class="menu-item" data-target="view-registrar-prestamo" onclick="switchView('view-registrar-prestamo')">
+                        <i class="fas fa-clipboard-list"></i> <span>Registrar préstamo</span>
+                    </li>
+                    <li class="menu-item" data-target="view-registrar-devolucion" onclick="switchView('view-registrar-devolucion')">
+                        <i class="fas fa-undo"></i> <span>Registrar devolución</span>
+                    </li>
+                    <li class="menu-item" data-target="view-usuarios" onclick="switchView('view-usuarios')">
+                        <i class="fas fa-users"></i> <span>Usuarios</span>
+                    </li>
+                    <li class="menu-item" data-target="view-pc" onclick="switchView('view-pc')">
+                        <i class="fas fa-laptop"></i> <span>PC y Tablets</span>
+                    </li>
+                    <li class="menu-item" data-target="view-historial" onclick="switchView('view-historial')">
+                        <i class="fas fa-history"></i> <span>Historial de préstamos</span>
+                    </li>
+                    <li class="menu-item" data-target="view-reportes" onclick="switchView('view-reportes')">
+                        <i class="fas fa-chart-pie"></i> <span>Reportes</span>
+                    </li>
+                    <li class="menu-item" data-target="view-configuracion" onclick="switchView('view-configuracion')">
+                        <i class="fas fa-cog"></i> <span>Configuración</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <footer class="sidebar-logout" id="btn-logout" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i> <span>Cerrar sesión</span>
+            </footer>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL DERECHO -->
+        <section class="main-content">
+            
+            <header class="main-header">
+                <span class="breadcrumbs" id="current-path">Dashboard</span>
+                <section class="user-dropdown">
+                    <span class="user-avatar-icon"><i class="fas fa-user-shield"></i></span>
+                    <span id="user-display-name">Administrador</span>
+                    <i class="fas fa-chevron-down"></i>
+                </section>
+            </header>
+
+            <section class="views-container">
+
+                <!-- 1. DASHBOARD -->
+                <article id="view-dashboard" class="content-view active">
+                    <h2>¡Bienvenido al Sistema!</h2>
+                    <section class="dashboard-grid">
+                        <section class="indicator-card text-blue" onclick="switchView('view-pc')" style="cursor: pointer;">
+                            <i class="fas fa-laptop fa-2x"></i> 
+                            <span class="num" id="dash-pc-disponibles">0</span> 
+                            <span class="label">PC y Tablets disponibles</span>
+                        </section>
+
+                        <section class="indicator-card text-green" onclick="switchView('view-pc')" style="cursor: pointer;">
+                            <i class="fas fa-check-circle fa-2x"></i> 
+                            <span class="num" id="dash-pc-prestadas">0</span> 
+                            <span class="label">PC y Tablets prestadas</span>
+                        </section>
+
+                        <section class="indicator-card text-purple" onclick="switchView('view-usuarios')" style="cursor: pointer;">
+                            <i class="fas fa-users fa-2x"></i> 
+                            <span class="num" id="dash-total-usuarios">0</span> 
+                            <span class="label">Usuarios registrados</span>
+                        </section>
+
+                        <section class="indicator-card text-orange" onclick="switchView('view-historial')" style="cursor: pointer;">
+                            <i class="fas fa-exclamation-circle fa-2x"></i> 
+                            <span class="num" id="dash-prestamos-activos">0</span> 
+                            <span class="label">Préstamos activos</span>
+                        </section>
+                    </section>
+
+                    <h3>Accesos rápidos</h3>
+                    <section class="quick-actions-grid">
+                        <button type="button" class="action-card" onclick="switchView('view-registrar-prestamo')">
+                            <i class="fas fa-file-medical"></i> <span>Registrar préstamo</span>
+                        </button>
+                        <button type="button" class="action-card" onclick="switchView('view-registrar-devolucion')">
+                            <i class="fas fa-file-import"></i> <span>Registrar devolución</span>
+                        </button>
+                    </section>
+                </article>
+
+                <!-- 2. REGISTRAR PRÉSTAMO -->
+                <article id="view-registrar-prestamo" class="content-view">
+                    <h2>Registrar préstamo</h2>
+                    <form class="form-container" onsubmit="event.preventDefault();">
+                        <h3>Datos del usuario</h3>
+                        <section class="form-row-search">
+                            <input type="text" id="search-doc" placeholder="Ingrese documento">
+                            <button type="button" class="btn btn-primary-dark" onclick="buscarUsuarioPrestamo()">Buscar</button>
+                        </section>
+                        <section class="form-grid">
+                            <p class="form-group">
+                                <label for="res-nombre">Nombre</label>
+                                <input type="text" id="res-nombre" placeholder="Nombre">
+                            </p>
+                            <p class="form-group">
+                                <label for="res-curso">Curso</label>
+                                <input type="text" id="res-curso" placeholder="Curso">
+                            </p>
+                            <p class="form-group">
+                                <label for="select-tipo-equipo">Tipo de Equipo</label>
+                                <select id="select-tipo-equipo" class="input-field">
+                                    <option value="Notebook Ceibal">Notebook Ceibal</option>
+                                    <option value="Tablet">Tablet</option>
+                                </select>
+                            </p>
+                        </section>
+                        <footer class="form-actions mt-20">
+                            <button type="button" class="btn btn-blue shadow-btn" onclick="guardarPrestamo()">Guardar préstamo</button>
+                        </footer>
+                    </form>
+                </article>
+
+                <!-- 3. REGISTRAR DEVOLUCIÓN -->
+                <article id="view-registrar-devolucion" class="content-view">
+                    <h2>Registrar devolución</h2>
+                    <form class="form-container" onsubmit="event.preventDefault();">
+                        <h3>Buscar préstamo</h3>
+                        <section class="form-row-search">
+                            <input type="text" id="input-dev-prestamo" placeholder="Ingrese N° de préstamo">
+                            <button type="button" class="btn btn-primary-dark" onclick="buscarPrestamoDevolucion()">Buscar</button>
+                        </section>
+                        <footer class="form-actions mt-20">
+                            <button type="button" class="btn btn-green shadow-btn" onclick="confirmarDevolucion()">Confirmar devolución</button>
+                        </footer>
+                    </form>
+                </article>
+
+                <!-- 4. GESTIÓN DE USUARIOS -->
+                <article id="view-usuarios" class="content-view">
+                    <h2>Usuarios Registrados</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Documento</th><th>Nombre</th><th>Curso</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="tabla-usuarios-body"></tbody>
+                    </table>
+                </article>
+
+                <!-- 5. GESTIÓN DE PC -->
+                <article id="view-pc" class="content-view">
+                    <h2>Inventario de PC y Tablets</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>N° Inventario</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-pc-body"></tbody>
+                    </table>
+                </article>
+
+                <!-- 6. GESTIÓN DE HISTORIAL DE PRÉSTAMOS -->
+                <article id="view-historial" class="content-view">
+                    <h2>Historial de préstamos</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>N° Préstamo</th>
+                                <th>Usuario</th>
+                                <th>PC / Tablet</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-historial-body"></tbody>
+                    </table>
+                </article>
+
+                <!-- 7. REPORTES -->
+                <article id="view-reportes" class="content-view">
+                    <h2>Reportes del Sistema</h2>
+                    
+                    <section class="reportes-grid">
+                        <article class="card-reporte blue">
+                            <span class="card-title">Total Préstamos</span>
+                            <h3 id="rep-total-prestamos" class="card-value">0</h3>
+                        </article>
+                        <article class="card-reporte red">
+                            <span class="card-title">Préstamos Activos</span>
+                            <h3 id="rep-prestamos-activos" class="card-value">0</h3>
+                        </article>
+                        <article class="card-reporte green">
+                            <span class="card-title">Equipos Disponibles</span>
+                            <h3 id="rep-equipos-disponibles" class="card-value">0</h3>
+                        </article>
+                        <article class="card-reporte purple">
+                            <span class="card-title">Usuarios Registrados</span>
+                            <h3 id="rep-total-usuarios" class="card-value">0</h3>
+                        </article>
+                    </section>
+
+                    <!-- Detalle Préstamos Activos -->
+                    <section class="seccion-detalle-activos" style="margin-top: 25px;">
+                        <h3>Listado de Préstamos Activos</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>N° Préstamo</th>
+                                    <th>Usuario</th>
+                                    <th>Equipo</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-reportes-activos-body"></tbody>
+                        </table>
+                    </section>
+
+                    <section class="acciones-reportes" style="margin-top: 20px;">
+                        <button type="button" class="btn btn-blue" onclick="window.print()">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                        <button type="button" class="btn btn-green" onclick="alert('Exportando reporte a Excel...')">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
+                        </button>
+                    </section>
+                </article>
+
+                <!-- 8. CONFIGURACIÓN -->
+                <article id="view-configuracion" class="content-view">
+                    <h2>Configuración del Sistema</h2>
+
+                    <!-- Perfil y Seguridad -->
+                    <section class="config-section">
+                        <h3><i class="fas fa-user-shield"></i> Perfil y Seguridad</h3>
+                        <form id="form-config-seguridad" class="config-form" onsubmit="guardarSeguridad(event)">
+                            <label>
+                                <span>Usuario Actual</span>
+                                <input type="text" id="cfg-usuario-actual" value="Administrador" disabled>
+                            </label>
+                            <label>
+                                <span>Nueva Contraseña</span>
+                                <input type="password" id="cfg-pass-nueva" placeholder="Ingrese nueva contraseña">
+                            </label>
+                            <label>
+                                <span>Confirmar Contraseña</span>
+                                <input type="password" id="cfg-pass-confirm" placeholder="Repita la nueva contraseña">
+                            </label>
+                            <button type="submit" class="btn btn-blue">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </form>
+                    </section>
+
+                    <!-- Parámetros de Préstamo -->
+                    <section class="config-section">
+                        <h3><i class="fas fa-sliders-h"></i> Parámetros de Préstamo</h3>
+                        <form id="form-config-parametros" class="config-form" onsubmit="guardarParametros(event)">
+                            <label>
+                                <span>Días máximos por préstamo por defecto</span>
+                                <input type="number" id="param-dias" value="30" min="1">
+                            </label>
+                            <label>
+                                <span>Límite de equipos por alumno</span>
+                                <input type="number" id="param-limite" value="1" min="1">
+                            </label>
+                            <button type="submit" class="btn btn-green">
+                                <i class="fas fa-check"></i> Actualizar Parámetros
+                            </button>
+                        </form>
+                    </section>
+
+                    <!-- Apariencia -->
+                    <section class="config-section">
+                        <h3><i class="fas fa-palette"></i> Apariencia</h3>
+                        <section class="config-toggle">
+                            <span>Modo Oscuro</span>
+                            <button type="button" class="btn btn-purple" onclick="toggleModoOscuro()">
+                                <i class="fas fa-moon"></i> Cambiar Tema
+                            </button>
+                        </section>
+                    </section>
+                </article>
+
+            </section>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
